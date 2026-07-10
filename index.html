@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Keuangan Pribadi</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+margin:0;
+padding:20px;
+background:#f3f5fb;
+}
+
+.container{
+max-width:450px;
+margin:auto;
+}
+
+
+.header{
+
+background:#4f46e5;
+color:white;
+padding:25px;
+border-radius:20px;
+
+}
+
+
+.saldo{
+
+font-size:32px;
+font-weight:bold;
+
+}
+
+
+
+.cards{
+
+display:flex;
+gap:10px;
+margin-top:15px;
+
+}
+
+
+.card{
+
+background:white;
+padding:15px;
+border-radius:15px;
+flex:1;
+
+}
+
+
+
+.green{
+color:#16a34a;
+}
+
+.red{
+color:#dc2626;
+}
+
+
+
+.box{
+
+background:white;
+margin-top:20px;
+padding:20px;
+border-radius:20px;
+
+}
+
+
+
+input,select,button{
+
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:1px solid #ddd;
+
+}
+
+
+button{
+
+background:#4f46e5;
+color:white;
+border:none;
+cursor:pointer;
+
+}
+
+
+
+.item{
+
+background:white;
+padding:15px;
+margin-top:10px;
+border-radius:15px;
+
+display:flex;
+justify-content:space-between;
+
+}
+
+
+
+.hapus{
+
+background:#ef4444;
+width:auto;
+padding:7px 10px;
+
+}
+
+
+
+.kategori{
+
+background:#eef2ff;
+padding:5px 10px;
+border-radius:10px;
+font-size:12px;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<div class="header">
+
+<p>Total Saldo</p>
+
+<div id="saldo" class="saldo">
+Rp 0
+</div>
+
+</div>
+
+
+
+<div class="cards">
+
+<div class="card">
+
+<p>Pemasukan</p>
+
+<h3 id="masuk" class="green">
+Rp 0
+</h3>
+
+</div>
+
+
+<div class="card">
+
+<p>Pengeluaran</p>
+
+<h3 id="keluar" class="red">
+Rp 0
+</h3>
+
+</div>
+
+</div>
+
+
+
+
+<div class="box">
+
+
+<h3>Tambah Transaksi</h3>
+
+
+<input id="nama"
+placeholder="Nama transaksi">
+
+
+<input id="jumlah"
+placeholder="Jumlah uang"
+inputmode="numeric"
+oninput="formatUang(this)">
+
+
+
+<select id="jenis">
+
+<option value="masuk">
+💰 Pemasukan
+</option>
+
+<option value="keluar">
+💸 Pengeluaran
+</option>
+
+</select>
+
+
+
+
+<select id="kategori">
+
+
+<option>
+🍔 Makanan
+</option>
+
+<option>
+🚗 Transportasi
+</option>
+
+<option>
+🏠 Tagihan
+</option>
+
+<option>
+🛒 Belanja
+</option>
+
+<option>
+💼 Gaji
+</option>
+
+<option>
+📦 Lainnya
+</option>
+
+
+</select>
+
+
+
+<button onclick="tambah()">
++ Tambah
+</button>
+
+
+</div>
+
+
+
+
+
+<div class="box">
+
+<h3>Riwayat</h3>
+
+<div id="list"></div>
+
+</div>
+
+
+
+
+<div class="box">
+
+<h3>Pengeluaran Berdasarkan Kategori</h3>
+
+<div id="ringkasan"></div>
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+<script>
+
+
+let data =
+JSON.parse(localStorage.getItem("keuangan"))
+|| [];
+
+
+
+
+// format angka
+
+function formatUang(input){
+
+let angka =
+input.value.replace(/\D/g,'');
+
+
+input.value =
+angka.replace(
+/\B(?=(\d{3})+(?!\d))/g,
+"."
+);
+
+}
+
+
+
+
+function rupiah(angka){
+
+return "Rp "
++
+angka.toLocaleString("id-ID");
+
+}
+
+
+
+
+
+function tanggal(){
+
+return new Date()
+.toLocaleDateString(
+"id-ID",
+{
+day:"numeric",
+month:"long",
+year:"numeric"
+}
+);
+
+}
+
+
+
+
+function simpan(){
+
+localStorage.setItem(
+"keuangan",
+JSON.stringify(data)
+);
+
+}
+
+
+
+
+
+function tambah(){
+
+
+let nama =
+document.getElementById("nama").value;
+
+
+let jumlah =
+Number(
+document.getElementById("jumlah")
+.value
+.replace(/\./g,'')
+);
+
+
+let jenis =
+document.getElementById("jenis").value;
+
+
+
+let kategori =
+document.getElementById("kategori").value;
+
+
+
+if(nama=="" || jumlah<=0){
+
+alert("Isi data dengan benar");
+
+return;
+
+}
+
+
+
+
+data.push({
+
+id:Date.now(),
+
+nama:nama,
+
+jumlah:jumlah,
+
+jenis:jenis,
+
+kategori:kategori,
+
+tanggal:tanggal()
+
+});
+
+
+
+simpan();
+
+tampil();
+
+
+document.getElementById("nama").value="";
+
+document.getElementById("jumlah").value="";
+
+
+}
+
+
+
+
+
+function hapus(id){
+
+
+data =
+data.filter(
+x=>x.id!=id
+);
+
+
+simpan();
+
+tampil();
+
+
+}
+
+
+
+
+
+function tampil(){
+
+
+let list =
+document.getElementById("list");
+
+
+list.innerHTML="";
+
+
+let pemasukan=0;
+
+let pengeluaran=0;
+
+
+let kategori={};
+
+
+
+data.forEach(x=>{
+
+
+if(x.jenis=="masuk"){
+
+pemasukan+=x.jumlah;
+
+}else{
+
+
+pengeluaran+=x.jumlah;
+
+
+if(!kategori[x.kategori]){
+
+kategori[x.kategori]=0;
+
+}
+
+kategori[x.kategori]+=x.jumlah;
+
+
+}
+
+
+
+
+
+list.innerHTML+=`
+
+<div class="item">
+
+<div>
+
+<b>${x.nama}</b>
+
+<br>
+
+<small>${x.tanggal}</small>
+
+<br>
+
+<span class="kategori">
+${x.kategori}
+</span>
+
+
+</div>
+
+
+<div>
+
+
+<b class="${x.jenis=="masuk"?"green":"red"}">
+
+${x.jenis=="masuk"?"+":"-"}
+
+${rupiah(x.jumlah)}
+
+</b>
+
+
+<br>
+
+
+<button 
+class="hapus"
+onclick="hapus(${x.id})">
+
+Hapus
+
+</button>
+
+
+</div>
+
+
+</div>
+
+`;
+
+
+
+});
+
+
+
+
+
+document.getElementById("masuk")
+.innerHTML=
+rupiah(pemasukan);
+
+
+
+document.getElementById("keluar")
+.innerHTML=
+rupiah(pengeluaran);
+
+
+
+document.getElementById("saldo")
+.innerHTML=
+rupiah(
+pemasukan-pengeluaran
+);
+
+
+
+
+
+let ringkasan =
+document.getElementById("ringkasan");
+
+
+ringkasan.innerHTML="";
+
+
+
+for(let k in kategori){
+
+
+ringkasan.innerHTML+=`
+
+<p>
+
+${k}
+
+<br>
+
+<b class="red">
+
+${rupiah(kategori[k])}
+
+</b>
+
+</p>
+
+
+`;
+
+}
+
+
+}
+
+
+
+tampil();
+
+
+
+</script>
+
+
+</body>
+</html>
