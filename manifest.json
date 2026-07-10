@@ -1,15 +1,13 @@
 {
   "name": "Keuangan Pribadi",
-  "short_name": "Keuangan",
-  "description": "Aplikasi pencatat pemasukan dan pengeluaran pribadi",
-  "start_url": "./",
+  "short_name": "KeuP",
+  "start_url": "/KeuP/",
   "display": "standalone",
   "background_color": "#f3f5fb",
   "theme_color": "#4f46e5",
-
   "icons": [
     {
-      "src": "./icon.png",
+      "src": "/KeuP/icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
