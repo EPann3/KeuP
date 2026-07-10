@@ -1,24 +1,21 @@
-const CACHE_NAME="keuangan-v1";
+const CACHE_NAME = "keuangan-v2";
 
-
-const FILES=[
-
+const FILES = [
 "./",
 "./index.html",
-"./manifest.json"
-
+"./manifest.json",
+"./icon.png"
 ];
-
 
 
 self.addEventListener(
 "install",
-event=>{
+event => {
 
 event.waitUntil(
 
 caches.open(CACHE_NAME)
-.then(cache=>{
+.then(cache => {
 
 return cache.addAll(FILES);
 
@@ -30,24 +27,19 @@ return cache.addAll(FILES);
 
 
 
-
 self.addEventListener(
 "fetch",
-event=>{
-
+event => {
 
 event.respondWith(
 
 caches.match(event.request)
+.then(response => {
 
-.then(response=>{
-
-return response ||
-fetch(event.request);
+return response || fetch(event.request);
 
 })
 
 );
-
 
 });
